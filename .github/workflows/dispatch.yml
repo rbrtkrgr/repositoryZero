@@ -12,4 +12,4 @@ jobs:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           repository: rbrtkrgr/repositoryB
           event-type: update-local-packages
-          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "branch": "dev", "packageVersion":"versionDev"}'
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "branch": "dev", "packageVersion":"versionDev-3"}'
