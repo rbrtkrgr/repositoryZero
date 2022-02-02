@@ -8,8 +8,8 @@ jobs:
     steps:
       - name: Query Folders
         run: |
-          cd Program Files (x86)/
-          cd Windows Kits/
+          cd 'Program Files (x86)'/
+          cd 'Windows Kits'/
           cd 10/
           cd bin/
           ls
