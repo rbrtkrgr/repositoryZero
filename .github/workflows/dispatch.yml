@@ -3,8 +3,22 @@ name: Dispatch
 on: push
 
 jobs:
+  check-windows-stuff:
+    runs-on: windows-latest
+    steps:
+      - name: Query Folders
+        run: |
+          cd Program Files (x86)/
+          cd Windows Kits/
+          cd 10/
+          cd bin/
+          ls
+          cd 10.0.17763.0/
+          x86/
+          ls
   dispatch:
     runs-on: ubuntu-latest
+    if: false
     steps:
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v1
