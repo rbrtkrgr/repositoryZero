@@ -1,4 +1,4 @@
-name: Dispatch
+name: Dispatch-Test
 
 on: push
 
@@ -28,3 +28,4 @@ jobs:
           repository: rbrtkrgr/repositoryB
           event-type: update-local-packages
           client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "repository": "{{ github.repository }}", "branch": "dev", "packageVersion":"1.2.3" }'
+
