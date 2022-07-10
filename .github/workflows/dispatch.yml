@@ -3,6 +3,7 @@ name: Dispatch
 on: push
 
 env:
+  GH_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
   REPO: "repositoryB"
 
 jobs:
