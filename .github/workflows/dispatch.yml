@@ -2,9 +2,13 @@ name: Dispatch
 
 on: push
 
+env:
+  REPO: "repositoryB"
+
 jobs:
   check-windows-stuff:
     runs-on: windows-latest
+    if: false
     steps:
       - name: Query Folders
         run: |
@@ -19,12 +23,15 @@ jobs:
           ls
   dispatch:
     runs-on: ubuntu-latest
-    if: false
+    if: true
     steps:
       - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v1
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          repository: rbrtkrgr/repositoryB
-          event-type: update-local-packages
-          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "repository": "{{ github.repository }}", "branch": "dev", "packageVersion":"1.2.3" }'
+        run: |
+          gh api /repos/$GITHUB_REPOSITORY_OWNER/${{env.REPO}}/actions/workflows/receive-dispatch.yml/dispatches \
+            --input - <<< '{"ref":"${{ github.ref }}"","inputs":{"branch":"dev","packageVersion":"1.2.4"}'
+        #uses: peter-evans/repository-dispatch@v1
+        #with:
+        #  token: ${{ secrets.REPO_ACCESS_TOKEN }}
+        #  repository: rbrtkrgr/repositoryB
+        #  event-type: update-local-packages
+        #  client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "repository": "{{ github.repository }}", "branch": "dev", "packageVersion":"1.2.3" }'
