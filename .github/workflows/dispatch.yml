@@ -26,10 +26,16 @@ jobs:
     runs-on: ubuntu-latest
     if: true
     steps:
-      - name: Repository Dispatch
+      - name: Repository Dispatch (gh api)
+        if: false
         run: |
           gh api /repos/$GITHUB_REPOSITORY_OWNER/${{env.REPO}}/actions/workflows/receive-dispatch.yml/dispatches \
             --input - <<< '{"ref":"${{ github.ref }}","inputs":{"branch":"dev","version":"1.2.4"}}'
+      - name: Repository Dispatch (gh workflow)
+        if: true
+        run: |
+          echo '{"branch":"dev","version":"1.2.5"}' | gh workflow run receive-dispatch.yml --json --ref ${{ github.ref }} --repo $GITHUB_REPOSITORY_OWNER/${{env.REPO}}
+            
         #uses: peter-evans/repository-dispatch@v1
         #with:
         #  token: ${{ secrets.REPO_ACCESS_TOKEN }}
