@@ -1,4 +1,4 @@
-name: Test Release action
+name: Test Publishing
 
 on:
   release:
@@ -14,3 +14,11 @@ jobs:
     - name: Runs on Release
       if: '!github.event.prerelease'
       run: echo "This is a Release"
+    - name: Debugging
+      run: |
+        echo ${{ github.event.prerelease }}
+        echo ${{ github.event.release }}
+        echo ${{ github.event.published }}
+        echo ${{ github.event.prereleased }}
+        echo ${{ github.event.released }}
+        echo ${{ github.event_name }}
