@@ -16,9 +16,11 @@ jobs:
       run: echo "This is a Release"
     - name: Debugging
       run: |
+        echo ${{ github.event.release }}
+        echo ${{ github.event.release.name }}
+        echo ${{ github.event.release.type }}
+        echo ${{ github.event.release.prerelease }}
+        echo ${{ github.event.release.tag }}
         echo ${{ github.event.prerelease }}
         echo ${{ github.event.release }}
-        echo ${{ github.event.published }}
-        echo ${{ github.event.prereleased }}
-        echo ${{ github.event.released }}
         echo ${{ github.event_name }}
