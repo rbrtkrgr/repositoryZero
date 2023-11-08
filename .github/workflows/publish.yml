@@ -31,19 +31,20 @@ jobs:
         echo "Prerelease: ${{ github.event.release.prerelease }}"
         echo "Latest: ${{ github.event.release.latest }}"
         echo "Event Name: ${{ github.event_name }}"
+        echo "Event Tag: ${{ github.event.release.tag }}"
     - name: Checkout
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: Tag Prerelease
-      if: 'env.PRERELEASE'
+      if: $PRERELEASE == 'true'
       run: |
         echo "Creating a Pre-Release Tag"
         TAG="0.8-beta"
         git tag $TAG
         git push origin $TAG
     - name: Tag Release
-      if: 'env.RELEASE'
+      if: $RELEASE == 'true'
       run: |
         echo "Creating a Release Tag"
         TAG="0.8-release"
