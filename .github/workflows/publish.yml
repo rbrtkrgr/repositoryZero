@@ -37,14 +37,14 @@ jobs:
       with:
         fetch-depth: 0
     - name: Tag Prerelease
-      if: $PRERELEASE == 'true'
+      if: ${{ env.PRERELEASE == 'true' }}
       run: |
         echo "Creating a Pre-Release Tag"
         #TAG="0.8.1-beta"
         #git tag $TAG
         #git push origin $TAG
     - name: Tag Release
-      if: $RELEASE == 'true'
+      if: ${{ env.RELEASE == 'true' }}
       run: |
         echo "Creating a Release Tag"
         #TAG="0.8-release"
