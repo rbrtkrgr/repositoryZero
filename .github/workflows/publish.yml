@@ -9,16 +9,20 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BRANCH: "GA"
+      PRERELEASE: false
+      RELEASE: false
     steps:
     - name: Runs on Pre-Release
       if: 'github.event.release.prerelease'
       run: |
         echo "This is a Pre-Release"
         echo "BRANCH=EA" >> $GITHUB_ENV
+        echo "PRERELEASE=true" >> $GITHUB_ENV
     - name: Runs on Release
       if: '!github.event.release.prerelease'
       run: |
         echo "This is a Release"
+        echo "RELEASE=true" >> $GITHUB_ENV
     - name: Debugging
       run: |
         echo "Branch: $BRANCH"
@@ -27,3 +31,17 @@ jobs:
         echo "Prerelease: ${{ github.event.release.prerelease }}"
         echo "Latest: ${{ github.event.release.latest }}"
         echo "Event Name: ${{ github.event_name }}"
+    - name: Tag Prerelease
+      if: 'env.PRERELEASE'
+      run: |
+        echo "Creating a Pre-Release Tag"
+        TAG="0.8-beta"
+        git tag $TAG
+        git push origin $TAG
+    - name: Tag Release
+      if: 'env.RELEASE'
+      run: |
+        echo "Creating a Release Tag"
+        TAG="0.8-release"
+        git tag $TAG
+        git push origin $TAG
