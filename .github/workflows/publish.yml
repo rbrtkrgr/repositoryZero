@@ -7,19 +7,14 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      BRANCH: "GA"
     steps:
-    - name: Establish Variable
-      run: |
-        echo "BRANCH=GA" >> $GITHUB_ENV
     - name: Runs on Pre-Release
       if: 'github.event.release.prerelease'
       run: |
         echo "This is a Pre-Release"
-        echo "Existing Branch: ${{ env.BRANCH }}"
-        echo "Existing Branch2: $BRANCH"
         echo "BRANCH=EA" >> $GITHUB_ENV
-        echo "New Branch: ${{ env.BRANCH }}"
-        echo "New Branch2: $BRANCH"
     - name: Runs on Release
       if: '!github.event.release.prerelease'
       run: |
