@@ -8,11 +8,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      BRANCH: "GA"
+      DEFAULTBRANCH: "GA"
     steps:
     - name: Establish Variable
       run: |
-        echo "Branch: $BRANCH"
+        echo "Branch: $DEFAULTBRANCH"
     - name: Runs on Pre-Release
       if: 'github.event.release.prerelease'
       run: |
@@ -21,7 +21,9 @@ jobs:
         echo "New Branch: $BRANCH"
     - name: Runs on Release
       if: '!github.event.release.prerelease'
-      run: echo "This is a Release"
+      run: |
+        echo "This is a Release"
+        BRANCH=$DEFAULTBRANCH
     - name: Debugging
       run: |
         echo "Branch: $BRANCH"
