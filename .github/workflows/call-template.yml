@@ -8,4 +8,4 @@ jobs:
     secrets: inherit
     uses: rbrtkrgr/repositoryPrime/.github/workflows/json-array-template.yml@main
     with:
-      language-matrix: "csharp,javascript"
+      languages: "csharp,javascript"
