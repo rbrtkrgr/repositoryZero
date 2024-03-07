@@ -16,13 +16,12 @@ jobs:
     steps:
       - id: setVariables
         run: |
-          languages=\"$inputs\"
           echo $languages
-          matrix=$(echo $languages | jq -c 'split(",")')
+          matrix=$(echo \"$languages\" | jq -c 'split(",")')
           echo $matrix
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
         env:
-          inputs: ${{ inputs.languages }}
+          languages: ${{ inputs.languages }}
   analyze:
     name: Analyze
     needs: setup
