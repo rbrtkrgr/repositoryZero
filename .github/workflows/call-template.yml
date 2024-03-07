@@ -6,6 +6,6 @@ on:
 jobs:
   analyze:
     secrets: inherit
-    uses: rbrtkrgr/repositoryPrime/.github/workflows/json-array-template.yml@main
+    uses: rbrtkrgr/repositoryPrime/.github/workflows/template.yml@main
     with:
       languages: "csharp,javascript"
