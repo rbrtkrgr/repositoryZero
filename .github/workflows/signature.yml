@@ -13,5 +13,6 @@ jobs:
         run: |
           touch newfile.txt
           git config --global user.email "rbrtkrgr@icloud.com"
+          git config --global user.name "rbrtkrgr"
           git commit -am "Adding newfile.txt"
           git push
