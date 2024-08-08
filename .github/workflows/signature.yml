@@ -16,4 +16,5 @@ jobs:
           git config --global user.name "rbrtkrgr"
           git add newfile.txt
           git commit -m "Adding newfile.txt"
+          git log
           git push
