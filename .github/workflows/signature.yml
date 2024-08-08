@@ -1,0 +1,16 @@
+name: Signed Commit Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  add-file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Add File and Commit
+        run: |
+          touch newfile.txt
+          git commit -am "Adding newfile.txt"
+          git push
