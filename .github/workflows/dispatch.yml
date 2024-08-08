@@ -1,6 +1,8 @@
 name: Dispatch
 
-on: push
+on:
+  workflow_dispatch:
+  #push:
 
 env:
   GH_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
