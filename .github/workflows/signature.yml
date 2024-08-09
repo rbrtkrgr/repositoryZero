@@ -46,29 +46,24 @@ jobs:
         
       - name: Add File and Commit
         run: |
-          echo "Additions: ${{ steps.prepare-payload.outputs.additions }}"
-          echo "SHA: ${{ steps.get-sha.outputs.sha }}"
-          echo "Repository: ${{github.repository}}"
-          echo "Branch: ${{github.ref_name}}"
+          REPO=${{github.repository}}
+          BRANCH=${{github.ref_name}}
+          MESSAGE="Adding newfile.txt"
+          PARENT_COMMIT_SHA=${{steps.get-sha.outputs.sha}}
+          ADDITIONS=${{steps.prepare-payload.outputs.additions}}
 
-          # GraphQL query for creating a commit
-          QUERY='
-          mutation CreateCommit($input: CreateCommitOnBranchInput!) {
-            createCommitOnBranch(input: $input) {
-              commit {
-                oid
-                message
-                url
-              }
-            }
-          }'
+          echo "Repo: $REPO"
+          echo "Branch: $BRANCH"
+          echo "Message: $MESSAGE"
+          echo "SHA: $PARENT_COMMIT_SHA"
+          echo "Additions: $ADDITIONS"
 
           INPUT=$(jq -n --compact-output \
-            --arg repo "${{github.repository}}" \
-            --arg branch "${{github.ref_name}}" \
-            --arg message "Adding newfile.txt" \
-            --arg sha "${{ steps.get-sha.outputs.sha }}" \
-            --argjson additions '${{ steps.prepare-payload.outputs.additions }}' \
+            --arg repo "$REPO" \
+            --arg branch "$BRANCH \
+            --arg message "$MESSAGE" \
+            --arg sha "$PARENT_COMMIT_SHA" \
+            --argjson additions "$ADDITIONS" \
             '{
               "branch": {
                 "repositoryNameWithOwner": $repo,
@@ -79,12 +74,21 @@ jobs:
               },
               "expectedHeadOid": $sha,
               "fileChanges": {
-                "additions": [{"path":"newfile.txt","contents":"dGVzdGluZwo="}]
+                "additions": $additions
               }
             }')
 
           echo $INPUT
 
           export GH_TOKEN=${{ secrets.PAT }}
-          # Calling the GitHub GraphQL API
-          gh api graphql -f query="$QUERY" -f input='$INPUT'
+          # Execute the mutation
+          gh api graphql -f query='
+          mutation CreateCommit($input: CreateCommitOnBranchInput!) {
+            createCommitOnBranch(input: $input) {
+              commit {
+                oid
+                message
+                url
+              }
+            }
+          }' -f input="$INPUT"
