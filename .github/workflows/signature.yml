@@ -9,6 +9,9 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: "main"
       - name: Make Change(s)
         run: |
           touch newfile.txt
@@ -23,7 +26,7 @@ jobs:
           git config --global user.email "rbrtkrgr@icloud.com"
           git config --global user.name "rbrtkrgr"
           git add .
-          git fetch --depth=2
+          git status
           CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
           echo "Changed files: $CHANGED_FILES"
           echo "files=$CHANGED_FILES" >> $GITHUB_ENV
