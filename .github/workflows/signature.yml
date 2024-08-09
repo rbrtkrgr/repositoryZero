@@ -54,18 +54,13 @@ jobs:
           MESSAGE="Adding newfile2.txt and newfile3.txt"
           PARENT_COMMIT_SHA=${{steps.get-sha.outputs.sha}}
           ADDITIONS=${{steps.prepare-payload.outputs.additions}}
-          ADDITIONS1='[{path:"newfile.txt",contents:"dGVzdGluZwo="}]'
-
-          ADDITIONS_JSON_QUOTED=$(jq --argjson additions "$ADDITIONS")
-
-          echo "Additions, JSON, quoted"
-          echo $ADDITIONS_JSON_QUOTED
-
-          echo "$ADDITIONS_JSON_QUOTED" | sed -E 's/"([a-zA-Z0-9_]+)":/\1:/g' > additions.gql
-
-          echo "Additions, JSON, quoted"
-          echo $ADDITIONS_UNQUOTED
           
+          jq --null-input -c \
+           --argjson additions "$ADDITIONS" \
+           '$additions' |\
+            sed -E 's/"([a-zA-Z0-9_]+)":/\1:/g' \
+           > additions.gql
+
           # now that `sed` has stripped quotes from keys, I can substitute into a query
           cat <<EOF > mutation.gql
           mutation(
