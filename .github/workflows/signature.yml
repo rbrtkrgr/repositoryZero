@@ -12,16 +12,18 @@ jobs:
       - name: Make Change(s)
         run: |
           touch newfile.txt
-          git config --global user.email "rbrtkrgr@icloud.com"
-          git config --global user.name "rbrtkrgr"
-          git add .
         
       - name: Fetch previous commit
+        if: false
         run: git fetch --depth=2
         
       - name: Detect changed files
         id: changes
         run: |
+          git config --global user.email "rbrtkrgr@icloud.com"
+          git config --global user.name "rbrtkrgr"
+          git add .
+          git fetch --depth=2
           CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
           echo "Changed files: $CHANGED_FILES"
           echo "files=$CHANGED_FILES" >> $GITHUB_ENV
