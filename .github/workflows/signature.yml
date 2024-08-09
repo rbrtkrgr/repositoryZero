@@ -56,7 +56,7 @@ jobs:
           ADDITIONS=${{steps.prepare-payload.outputs.additions}}
           ADDITIONS1='[{path:"newfile.txt",contents:"dGVzdGluZwo="}]'
 
-          ADDITIONS_JSON_QUOTED=(jq --argjson additions "$ADDITIONS")
+          ADDITIONS_JSON_QUOTED=$(jq --argjson additions "$ADDITIONS")
 
           echo "Additions, JSON, quoted"
           echo $ADDITIONS_JSON_QUOTED
