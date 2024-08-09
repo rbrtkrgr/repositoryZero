@@ -79,7 +79,7 @@ jobs:
               },
               "expectedHeadOid": $sha,
               "fileChanges": {
-                "additions": $additions
+                "additions": [{"path":"newfile.txt","contents":"dGVzdGluZwo="}]
               }
             }')
 
