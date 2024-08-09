@@ -84,9 +84,9 @@ jobs:
           echo "$INPUT"
 
           export GH_TOKEN=${{ secrets.PAT }}
-          # Execute the mutation
+          # Execute the GraphQL mutation
           gh api graphql -f query='
-          mutation CreateCommit($input: CreateCommitOnBranchInput!) {
+          mutation CreateCommitOnBranch($input: CreateCommitOnBranchInput!) {
             createCommitOnBranch(input: $input) {
               commit {
                 oid
@@ -94,4 +94,10 @@ jobs:
                 url
               }
             }
-          }' -F input=$INPUT
+          }' \
+          -f input.branch.repositoryNameWithOwner="$REPO" \
+          -f input.branch.branchName="$BRANCH" \
+          -f input.message.headline="$MESSAGE" \
+          -f input.expectedHeadOid="$PARENT_COMMIT_SHA" \
+          -f input.fileChanges.additions[0].path="newfile.txt" \
+          -f input.fileChanges.additions[0].contents="dGVzdGluZwo="
