@@ -46,7 +46,7 @@ jobs:
         
       - name: Add File and Commit
         run: |
-          #echo "Additions: ${{ steps.prepare-payload.outputs.additions }}"
+          echo "Additions: ${{ steps.prepare-payload.outputs.additions }}"
           echo "SHA: ${{ steps.get-sha.outputs.sha }}"
           echo "Repository: ${{github.repository}}"
           echo "Branch: ${{github.ref_name}}"
@@ -68,7 +68,7 @@ jobs:
             --arg branch "${{github.ref_name}}" \
             --arg message "Adding newfile.txt" \
             --arg sha "${{ steps.get-sha.outputs.sha }}" \
-            --argjson additions ${{ steps.prepare-payload.outputs.additions }} \
+            --argjson additions "{${{ steps.prepare-payload.outputs.additions }}}" \
             '{
               "branch": {
                 "repositoryNameWithOwner": $repo,
