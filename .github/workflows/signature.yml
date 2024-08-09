@@ -14,7 +14,7 @@ jobs:
           ref: "main"
       - name: Make Change(s)
         run: |
-          touch newfile.txt
+          echo "testing" >> newfile.txt
           
       - name: Detect changed files
         id: changes
