@@ -51,7 +51,7 @@ jobs:
         
           REPO=${{github.repository}}
           BRANCH=${{github.ref_name}}
-          MESSAGE="Adding newfile.txt"
+          MESSAGE="Adding newfile2.txt and newfile3.txt"
           PARENT_COMMIT_SHA=${{steps.get-sha.outputs.sha}}
           ADDITIONS=${{steps.prepare-payload.outputs.additions}}
           ADDITIONS1='[{path:"newfile.txt",contents:"dGVzdGluZwo="}]'
