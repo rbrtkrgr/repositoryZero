@@ -9,12 +9,79 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+      - name: Make Change(s)
+        run: touch newfile.txt
+        
+      - name: Fetch previous commit
+        run: git fetch --depth=2
+        
+      - name: Detect changed files
+        id: changes
+        run: |
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
+          echo "Changed files: $CHANGED_FILES"
+          echo "files=$CHANGED_FILES" >> $GITHUB_ENV
+      - name: Prepare CreateCommitOnBranch payload
+        id: prepare-payload
+        run: |
+          FILES=$(echo "${{ steps.changes.outputs.files }}" | tr " " "\n")
+          ADDITIONS=""
+          for FILE in $FILES; do
+            CONTENT=$(cat "$FILE" | base64 | tr -d '\n')
+            ADDITIONS+=$(jq -n --arg path "$FILE" --arg contents "$CONTENT" '{"path":$path,"contents":$contents}')
+            ADDITIONS+=","
+          done
+          ADDITIONS=${ADDITIONS%,}
+          echo "additions=[$ADDITIONS]" >> $GITHUB_ENV
+
+      - name: Get the latest commit SHA
+        id: get-sha
+        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_ENV
+        
       - name: Add File and Commit
         run: |
           touch newfile.txt
-          git config --global user.email "rbrtkrgr@icloud.com"
-          git config --global user.name "rbrtkrgr"
-          git add newfile.txt
-          git commit -m "Adding newfile.txt"
-          git log
-          git push
+          #git config --global user.email "rbrtkrgr@icloud.com"
+          #git config --global user.name "rbrtkrgr"
+          #git add newfile.txt
+          #git commit -m "Adding newfile.txt"
+
+          echo "Additions: ${{ steps.prepare-payload.outputs.additions }}"
+          echo "SHA: ${{ steps.get-sha.outputs.sha }}"
+
+          REPO= ${{github.repository}}
+          BRANCH=${{github.ref_name}}
+          COMMIT_MESSAGE="Adding newfile.txt"
+          PARENT_COMMIT_SHA=${{ steps.get-sha.outputs.sha }}
+          
+          # GraphQL query for creating a commit
+          QUERY='
+          mutation CreateCommit($input: CreateCommitOnBranchInput!) {
+            createCommitOnBranch(input: $input) {
+              commit {
+                oid
+                message
+                url
+              }
+            }
+          }'
+
+          INPUT=$(jq -n \
+            --argjson additions "${{ steps.prepare-payload.outputs.additions }}" \
+            '{
+              "branch": {
+                "repositoryNameWithOwner": $repo,
+                "branchName": $branch
+              },
+              "message": {
+                "headline": $COMMIT_MESSAGE
+              },
+              "expectedHeadOid": $sha,
+              "fileChanges": {
+                "additions": $additions
+              }
+            }')
+
+          export GH_TOKEN={{ secrets.PAT }}
+          # Calling the GitHub GraphQL API
+          gh api graphql -f query="$QUERY" -f input="$INPUT"
