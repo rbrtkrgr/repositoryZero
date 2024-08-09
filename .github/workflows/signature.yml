@@ -10,7 +10,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
       - name: Make Change(s)
-        run: touch newfile.txt
+        run: |
+          touch newfile.txt
+          git add .
         
       - name: Fetch previous commit
         run: git fetch --depth=2
