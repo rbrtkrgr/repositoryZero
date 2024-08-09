@@ -67,10 +67,9 @@ jobs:
           cat <<EOF > mutation.gql
           mutation(
             \$branch: String!
-            \$body: String!
+            \$message: String!
             \$repo: String!
             \$sha: GitObjectID!
-            \$title: String!
           ) {
             createCommitOnBranch(
               input: {
@@ -96,6 +95,6 @@ jobs:
           gh api graphql \
              -F branch="$BRANCH" \
              -F repo="$REPO" \
-             -F body="$MESSAGE" \
+             -F message="$MESSAGE" \
              -F sha="$PARENT_COMMIT_SHA"  \
              -F query=@mutation.gql
