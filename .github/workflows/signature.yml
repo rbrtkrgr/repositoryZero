@@ -56,7 +56,7 @@ jobs:
           ADDITIONS=${{steps.prepare-payload.outputs.additions}}
           
           jq --null-input -c \
-           --argjson additions "$ADDITIONS" \
+           --argjson additions '$ADDITIONS' \
            '$additions' |\
             sed -E 's/"([a-zA-Z0-9_]+)":/\1:/g' \
            > additions.gql
