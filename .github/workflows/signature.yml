@@ -99,5 +99,4 @@ jobs:
           -f input.branch.branchName="$BRANCH" \
           -f input.message.headline="$MESSAGE" \
           -f input.expectedHeadOid="$PARENT_COMMIT_SHA" \
-          -f input.fileChanges.additions[0].path="newfile.txt" \
-          -f input.fileChanges.additions[0].contents="dGVzdGluZwo="
+          -f input.fileChanges.additions="$ADDITIONS"
