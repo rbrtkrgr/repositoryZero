@@ -79,9 +79,9 @@ jobs:
               }
             }')
 
-          echo $INPUT
+          echo $INPUT2
           echo "And now another..."
-          echo "$INPUT"
+          echo "$INPUT2"
 
           export GH_TOKEN=${{ secrets.PAT }}
           # Execute the GraphQL mutation
