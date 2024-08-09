@@ -24,7 +24,7 @@ jobs:
           git config --global user.name "rbrtkrgr"
           git add .
 
-          CHANGED_FILES=$(git diff --staged --name-only)
+          CHANGED_FILES=$(git diff --staged --name-only | xargs)
           
           echo "Changed files: $CHANGED_FILES"
           echo "files=$CHANGED_FILES" >> $GITHUB_OUTPUT
