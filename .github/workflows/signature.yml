@@ -38,7 +38,7 @@ jobs:
             ADDITIONS+=","
           done
           ADDITIONS=${ADDITIONS%,}
-          echo "additions=[$ADDITIONS]" >> $GITHUB_ENV
+          echo "additions=[$ADDITIONS]" >> $GITHUB_OUTPUT
 
       - name: Get the latest commit SHA
         id: get-sha
