@@ -53,6 +53,8 @@ jobs:
             add_to_additions "$FILE" "$CONTENT"
           done
 
+          echo "Additions: $ADDITIONS"
+
           echo "additions=$ADDITIONS" >> $GITHUB_OUTPUT
 
       - name: Get the latest commit SHA
