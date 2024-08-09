@@ -49,12 +49,6 @@ jobs:
         
       - name: Add File and Commit
         run: |
-          touch newfile.txt
-          #git config --global user.email "rbrtkrgr@icloud.com"
-          #git config --global user.name "rbrtkrgr"
-          #git add newfile.txt
-          #git commit -m "Adding newfile.txt"
-
           echo "Additions: ${{ steps.prepare-payload.outputs.additions }}"
           echo "SHA: ${{ steps.get-sha.outputs.sha }}"
 
