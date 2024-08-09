@@ -95,8 +95,4 @@ jobs:
               }
             }
           }' \
-          -f input.branch.repositoryNameWithOwner="$REPO" \
-          -f input.branch.branchName="$BRANCH" \
-          -f input.message.headline="$MESSAGE" \
-          -f input.expectedHeadOid="$PARENT_COMMIT_SHA" \
-          -f input.fileChanges.additions="$ADDITIONS"
+          -f input="$INPUT2"
