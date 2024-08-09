@@ -83,6 +83,6 @@ jobs:
               }
             }')
 
-          export GH_TOKEN={{ secrets.PAT }}
+          export GH_TOKEN=${{ secrets.PAT }}
           # Calling the GitHub GraphQL API
           gh api graphql -f query="$QUERY" -f input="$INPUT"
