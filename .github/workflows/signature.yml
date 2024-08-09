@@ -26,8 +26,11 @@ jobs:
           git config --global user.email "rbrtkrgr@icloud.com"
           git config --global user.name "rbrtkrgr"
           git add .
-          git status
-          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
+
+          CHANGED_FILES=$(git diff --staged --name-only)
+          
+          
+          CHANGED2_FILES=$(git diff --name-only HEAD^ HEAD)
           echo "Changed files: $CHANGED_FILES"
           echo "files=$CHANGED_FILES" >> $GITHUB_ENV
       - name: Prepare CreateCommitOnBranch payload
