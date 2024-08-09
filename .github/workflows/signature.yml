@@ -81,7 +81,9 @@ jobs:
                 fileChanges: {
                   additions: $(cat additions.gql)
                 }
-                message: \$message
+                message: {
+                  headline: \$message
+                }
              }
             ) {
               commit {
