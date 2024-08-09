@@ -64,10 +64,15 @@ jobs:
               sed -e 's/"path"/path/g' -e 's/"contents"/contents/g' \
              > additions2.gql
 
-          ADDITION_JSON_QUOTED=(jq --argjson additions "$ADDITIONS")
+          ADDITIONS_JSON_QUOTED=(jq --argjson additions "$ADDITIONS")
 
+          echo "Additions, JSON, quoted"
+          echo $ADDITIONS_JSON_QUOTED
 
-          ADDITIONS_UNQUOTED=$(echo "$ADDITION_JSON_QUOTED" | sed -E 's/"([a-zA-Z0-9_]+)":/\1:/g') > additions.gql
+          ADDITIONS_UNQUOTED=$(echo "$ADDITIONS_JSON_QUOTED" | sed -E 's/"([a-zA-Z0-9_]+)":/\1:/g') > additions.gql
+
+          echo "Additions, JSON, quoted"
+          echo $ADDITIONS_UNQUOTED
           
           # now that `sed` has stripped quotes from keys, I can substitute into a query
           cat <<EOF > mutation.gql
