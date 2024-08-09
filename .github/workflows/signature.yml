@@ -49,7 +49,7 @@ jobs:
           echo "Additions: ${{ steps.prepare-payload.outputs.additions }}"
           echo "SHA: ${{ steps.get-sha.outputs.sha }}"
 
-          REPO= ${{github.repository}}
+          REPO=${{github.repository}}
           BRANCH=${{github.ref_name}}
           COMMIT_MESSAGE="Adding newfile.txt"
           PARENT_COMMIT_SHA=${{ steps.get-sha.outputs.sha }}
