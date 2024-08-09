@@ -46,6 +46,8 @@ jobs:
         
       - name: Add File and Commit
         run: |
+          export GH_TOKEN=${{secrets.PAT}}
+        
           REPO=${{github.repository}}
           BRANCH=${{github.ref_name}}
           MESSAGE="Adding newfile.txt"
@@ -53,46 +55,47 @@ jobs:
           ADDITIONS2=${{steps.prepare-payload.outputs.additions}}
           ADDITIONS='[{path:"newfile.txt",contents:"dGVzdGluZwo="}]'
 
-          echo "Repo: $REPO"
-          echo "Branch: $BRANCH"
-          echo "Message: $MESSAGE"
-          echo "SHA: $PARENT_COMMIT_SHA"
-          echo "Additions: $ADDITIONS"
 
-          INPUT2=$(jq -n --compact-output \
-            --arg repo "$REPO" \
-            --arg branch "$BRANCH" \
-            --arg message "$MESSAGE" \
-            --arg sha "$PARENT_COMMIT_SHA" \
-            --arg additions "$ADDITIONS" \
-            '{
-              "branch": {
-                "repositoryNameWithOwner": $repo,
-                "branchName": $branch
-              },
-              "message": {
-                "headline": $message
-              },
-              "expectedHeadOid": $sha,
-              "fileChanges": {
-                "additions": $additions
-              }
-            }')
-
-          echo $INPUT2
-          echo "And now another..."
-          echo "$INPUT2"
-
-          export GH_TOKEN=${{ secrets.PAT }}
-          # Execute the GraphQL mutation
-          gh api graphql -f query='
-          mutation CreateCommitOnBranch($input: CreateCommitOnBranchInput!) {
-            createCommitOnBranch(input: $input) {
+          # imagine that `additions` came from some other process and was a large array
+          jq --null-input -c \
+             --argjson additions '[{ "path": "newfile.txt", "contents": "dGVzdGluZwo=" }]' \
+             '$additions' |\
+              sed -e 's/"path"/path/g' -e 's/"contents"/contents/g' \
+             > additions.gql
+          
+          # now that `sed` has stripped quotes from keys, I can substitute into a query
+          cat <<EOF > mutation.gql
+          mutation(
+            \$branch: String!
+            \$body: String!
+            \$repo: String!
+            \$sha: GitObjectID!
+            \$title: String!
+          ) {
+            createCommitOnBranch(
+              input: {
+                branch: {
+                  repositoryNameWithOwner: \$repo,
+                  branchName: \$branch
+                },
+                expectedHeadOid: \$sha,
+                fileChanges: {
+                  additions: $(cat additions.gql)
+                }
+                message: \$message
+             }
+            ) {
               commit {
                 oid
-                message
-                url
               }
             }
-          }' \
-          -f input="$INPUT2"
+          }
+          EOF
+          
+          # and finally I can invoke the query with primitive variables
+          gh api graphql \
+             -F branch="$BRANCH" \
+             -F repo="$REPO" \
+             -F body="$MESSAGE" \
+             -F sha="$PARENT_COMMIT_SHA"  \
+             -F query=@mutation.gql
