@@ -15,11 +15,7 @@ jobs:
       - name: Make Change(s)
         run: |
           touch newfile.txt
-        
-      - name: Fetch previous commit
-        if: false
-        run: git fetch --depth=2
-        
+          
       - name: Detect changed files
         id: changes
         run: |
@@ -29,10 +25,8 @@ jobs:
 
           CHANGED_FILES=$(git diff --staged --name-only)
           
-          
-          CHANGED2_FILES=$(git diff --name-only HEAD^ HEAD)
           echo "Changed files: $CHANGED_FILES"
-          echo "files=$CHANGED_FILES" >> $GITHUB_ENV
+          echo "files=$CHANGED_FILES" >> $GITHUB_OUTPUT
       - name: Prepare CreateCommitOnBranch payload
         id: prepare-payload
         run: |
@@ -48,7 +42,7 @@ jobs:
 
       - name: Get the latest commit SHA
         id: get-sha
-        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_ENV
+        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
         
       - name: Add File and Commit
         run: |
