@@ -48,12 +48,9 @@ jobs:
         run: |
           echo "Additions: ${{ steps.prepare-payload.outputs.additions }}"
           echo "SHA: ${{ steps.get-sha.outputs.sha }}"
+          echo "Repository: ${{github.repository}}"
+          echo "Branch: ${{github.ref_name}}"
 
-          REPO=${{github.repository}}
-          BRANCH=${{github.ref_name}}
-          COMMIT_MESSAGE="Adding newfile.txt"
-          PARENT_COMMIT_SHA=${{ steps.get-sha.outputs.sha }}
-          
           # GraphQL query for creating a commit
           QUERY='
           mutation CreateCommit($input: CreateCommitOnBranchInput!) {
@@ -67,6 +64,10 @@ jobs:
           }'
 
           INPUT=$(jq -n \
+            --arg repo "${{github.repository}}" \
+            --arg branch "${{github.ref_name}}" \
+            --arg message "Adding newfile.txt" \
+            --arg sha "${{ steps.get-sha.outputs.sha }}" \
             --argjson additions "${{ steps.prepare-payload.outputs.additions }}" \
             '{
               "branch": {
@@ -74,7 +75,7 @@ jobs:
                 "branchName": $branch
               },
               "message": {
-                "headline": $COMMIT_MESSAGE
+                "headline": $message
               },
               "expectedHeadOid": $sha,
               "fileChanges": {
