@@ -60,7 +60,7 @@ jobs:
 
           INPUT=$(jq -n --compact-output \
             --arg repo "$REPO" \
-            --arg branch "$BRANCH \
+            --arg branch "$BRANCH" \
             --arg message "$MESSAGE" \
             --arg sha "$PARENT_COMMIT_SHA" \
             --argjson additions "$ADDITIONS" \
