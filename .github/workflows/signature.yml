@@ -80,6 +80,8 @@ jobs:
             }')
 
           echo $INPUT
+          echo "And now another..."
+          echo "$INPUT"
 
           export GH_TOKEN=${{ secrets.PAT }}
           # Execute the mutation
