@@ -67,7 +67,7 @@ jobs:
           cat <<EOF > mutation.gql
           mutation(
             \$branch: String!
-            \$message: CommitMessage!
+            \$message: String!
             \$repo: String!
             \$sha: GitObjectID!
           ) {
