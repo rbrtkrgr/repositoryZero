@@ -32,14 +32,28 @@ jobs:
         id: prepare-payload
         run: |
           FILES=$(echo "${{ steps.changes.outputs.files }}" | tr " " "\n")
-          ADDITIONS=""
+
+          # Initialize ADDITIONS as an empty JSON array
+          ADDITIONS='[]'
+          
+          # Function to add a new JSON object to the ADDITIONS array
+          add_to_additions() {
+            local FILE=$1
+            local CONTENT=$2
+          
+            # Construct the new JSON object
+            NEW_ITEM=$(jq -n --compact-output --arg path "$FILE" --arg contents "$CONTENT" '{"path":$path,"contents":$contents}')
+          
+            # Append the new JSON object to the ADDITIONS array
+            ADDITIONS=$(echo "$ADDITIONS" | jq --compact-output --argjson newItem "$NEW_ITEM" '. += [$newItem]')
+          }
+
           for FILE in $FILES; do
             CONTENT=$(cat "$FILE" | base64 | tr -d '\n')
-            ADDITIONS+=$(jq -n --compact-output --arg path "$FILE" --arg contents "$CONTENT" '{"path":$path,"contents":$contents}')
-            ADDITIONS+=","
+            add_to_additions "$FILE" "$CONTENT"
           done
-          ADDITIONS=${ADDITIONS%,}
-          echo "additions=[$ADDITIONS]" >> $GITHUB_OUTPUT
+
+          echo "additions=$ADDITIONS" >> $GITHUB_OUTPUT
 
       - name: Get the latest commit SHA
         id: get-sha
@@ -58,7 +72,7 @@ jobs:
           echo "Additions: $ADDITIONS"
           
           jq --null-input -c \
-           --argjson additions $ADDITIONS \
+           --argjson additions "$ADDITIONS" \
            '$additions' |\
             sed -E 's/"([a-zA-Z0-9_]+)":/\1:/g' \
            > additions.gql
