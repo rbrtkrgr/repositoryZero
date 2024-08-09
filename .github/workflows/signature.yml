@@ -63,7 +63,7 @@ jobs:
             }
           }'
 
-          INPUT=$(jq -n \
+          INPUT=$(jq -n --compact-output \
             --arg repo "${{github.repository}}" \
             --arg branch "${{github.ref_name}}" \
             --arg message "Adding newfile.txt" \
@@ -82,6 +82,8 @@ jobs:
                 "additions": [{"path":"newfile.txt","contents":"dGVzdGluZwo="}]
               }
             }')
+
+          echo $INPUT
 
           export GH_TOKEN=${{ secrets.PAT }}
           # Calling the GitHub GraphQL API
