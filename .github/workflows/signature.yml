@@ -64,7 +64,7 @@ jobs:
             --arg branch "$BRANCH" \
             --arg message "$MESSAGE" \
             --arg sha "$PARENT_COMMIT_SHA" \
-            --argjson additions "$ADDITIONS" \
+            --arg additions "$ADDITIONS" \
             '{
               "branch": {
                 "repositoryNameWithOwner": $repo,
