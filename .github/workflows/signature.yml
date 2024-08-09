@@ -56,14 +56,6 @@ jobs:
           ADDITIONS=${{steps.prepare-payload.outputs.additions}}
           ADDITIONS1='[{path:"newfile.txt",contents:"dGVzdGluZwo="}]'
 
-          ADDITION_JSON=(jq 
-          # imagine that `additions` came from some other process and was a large array
-          jq --null-input -c \
-             --argjson additions "$ADDITIONS" \
-             '$additions' |\
-              sed -e 's/"path"/path/g' -e 's/"contents"/contents/g' \
-             > additions2.gql
-
           ADDITIONS_JSON_QUOTED=(jq --argjson additions "$ADDITIONS")
 
           echo "Additions, JSON, quoted"
