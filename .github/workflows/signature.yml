@@ -54,6 +54,8 @@ jobs:
           MESSAGE="Adding newfile2.txt and newfile3.txt"
           PARENT_COMMIT_SHA=${{steps.get-sha.outputs.sha}}
           ADDITIONS=${{steps.prepare-payload.outputs.additions}}
+
+          echo "Additions: $ADDITIONS"
           
           jq --null-input -c \
            --argjson additions $ADDITIONS \
@@ -64,7 +66,7 @@ jobs:
           echo "Here is the additions gql"
           cat additions.gql
           echo "Did you see anything?"
-          echo "Additions: $ADDITIONS"
+
 
           # now that `sed` has stripped quotes from keys, I can substitute into a query
           cat <<EOF > mutation.gql
