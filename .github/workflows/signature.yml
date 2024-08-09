@@ -29,6 +29,7 @@ jobs:
           echo "Changed files: $CHANGED_FILES"
           echo "files=$CHANGED_FILES" >> $GITHUB_OUTPUT
       - name: Prepare CreateCommitOnBranch payload
+        if: false
         id: prepare-payload
         run: |
           FILES=$(echo "${{ steps.changes.outputs.files }}" | tr " " "\n")
@@ -64,26 +65,45 @@ jobs:
       - name: Add File and Commit
         run: |
           export GH_TOKEN=${{secrets.PAT}}
-        
-          REPO=${{github.repository}}
-          BRANCH=${{github.ref_name}}
-          MESSAGE="Adding newfile2.txt and newfile3.txt"
-          PARENT_COMMIT_SHA=${{steps.get-sha.outputs.sha}}
-          ADDITIONS=${{steps.prepare-payload.outputs.additions}}
 
-          echo "Additions: $ADDITIONS"
+          FILES=$(echo "${{ steps.changes.outputs.files }}" | tr " " "\n")
+
+          # Initialize ADDITIONS as an empty JSON array
+          ADDITIONS='[]'
           
+          # Function to add a new JSON object to the ADDITIONS array
+          add_to_additions() {
+            local FILE=$1
+            local CONTENT=$2
+          
+            # Construct the new JSON object
+            NEW_ITEM=$(jq -n --compact-output --arg path "$FILE" --arg contents "$CONTENT" '{"path":$path,"contents":$contents}')
+          
+            # Append the new JSON object to the ADDITIONS array
+            ADDITIONS=$(echo "$ADDITIONS" | jq --compact-output --argjson newItem "$NEW_ITEM" '. += [$newItem]')
+          }
+
+          for FILE in $FILES; do
+            CONTENT=$(cat "$FILE" | base64 | tr -d '\n')
+            add_to_additions "$FILE" "$CONTENT"
+          done
+
           jq --null-input -c \
            --argjson additions "$ADDITIONS" \
            '$additions' |\
             sed -E 's/"([a-zA-Z0-9_]+)":/\1:/g' \
            > additions.gql
 
-          echo "Here is the additions gql"
+          echo "Additions: $ADDITIONS"
+          echo "cat additions.gql"
           cat additions.gql
-          echo "Did you see anything?"
-
-
+          echo "Did that work?"
+        
+          REPO=${{github.repository}}
+          BRANCH=${{github.ref_name}}
+          MESSAGE="Adding newfile2.txt and newfile3.txt"
+          PARENT_COMMIT_SHA=${{steps.get-sha.outputs.sha}}
+          
           # now that `sed` has stripped quotes from keys, I can substitute into a query
           cat <<EOF > mutation.gql
           mutation(
