@@ -34,7 +34,7 @@ jobs:
           ADDITIONS=""
           for FILE in $FILES; do
             CONTENT=$(cat "$FILE" | base64 | tr -d '\n')
-            ADDITIONS+=$(jq -n --arg path "$FILE" --arg contents "$CONTENT" '{"path":$path,"contents":$contents}')
+            ADDITIONS+=$(jq -n --compact-output --arg path "$FILE" --arg contents "$CONTENT" '{"path":$path,"contents":$contents}')
             ADDITIONS+=","
           done
           ADDITIONS=${ADDITIONS%,}
