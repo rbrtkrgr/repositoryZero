@@ -14,7 +14,8 @@ jobs:
           ref: "main"
       - name: Make Change(s)
         run: |
-          echo "testing" >> newfile.txt
+          echo "testing2" >> newfile2.txt
+          echo "testing3" >> newfile3.txt
           
       - name: Detect changed files
         id: changes
@@ -52,13 +53,13 @@ jobs:
           BRANCH=${{github.ref_name}}
           MESSAGE="Adding newfile.txt"
           PARENT_COMMIT_SHA=${{steps.get-sha.outputs.sha}}
-          ADDITIONS2=${{steps.prepare-payload.outputs.additions}}
-          ADDITIONS='[{path:"newfile.txt",contents:"dGVzdGluZwo="}]'
+          ADDITIONS=${{steps.prepare-payload.outputs.additions}}
+          ADDITIONS1='[{path:"newfile.txt",contents:"dGVzdGluZwo="}]'
 
 
           # imagine that `additions` came from some other process and was a large array
           jq --null-input -c \
-             --argjson additions '[{ "path": "newfile.txt", "contents": "dGVzdGluZwo=" }]' \
+             --argjson additions "$ADDITIONS" \
              '$additions' |\
               sed -e 's/"path"/path/g' -e 's/"contents"/contents/g' \
              > additions.gql
