@@ -63,6 +63,8 @@ jobs:
 
           echo "Here is the additions gql"
           cat additions.gql
+          echo "Did you see anything?"
+          echo "Additions: $ADDITIONS"
 
           # now that `sed` has stripped quotes from keys, I can substitute into a query
           cat <<EOF > mutation.gql
