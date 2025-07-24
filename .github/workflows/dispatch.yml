@@ -5,7 +5,7 @@ on:
   push:
   #push:
 
-env:
+#env:
   #GH_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
   #REPO: "repositoryZero"
 
