@@ -10,10 +10,13 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   
   #REPO: "repositoryZero"
+defaults:
+  run:
+    shell: bash
 
 jobs:
   create-release:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Create release
         id: create-release
