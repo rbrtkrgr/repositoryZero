@@ -1,0 +1,32 @@
+name: Create QA
+
+on:
+  workflow_dispatch:
+  #push:
+  #push:
+
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  TAG: v1.3.${{github.run_number}}
+  
+  #REPO: "repositoryZero"
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Create prerelease
+        id: create-release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{env.TAG}}
+          release_name: ${{env.TAG}}
+          draft: false
+          prerelease: true
+      
