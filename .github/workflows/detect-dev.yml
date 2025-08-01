@@ -1,0 +1,16 @@
+name: Detecting Dev Release
+
+on:
+  release:
+    types:
+      - unpublished
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  echo-dev-draft-release:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Detected Dev Draft Release - $GITHUB_REF"
