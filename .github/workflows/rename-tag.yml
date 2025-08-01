@@ -27,6 +27,7 @@ jobs:
           tag_name: ${{inputs.old_tag_name}}-beta
           release_name:  ${{inputs.old_tag_name}}-beta
           prerelease: true
+          commitish: ${{ steps.get_sha.outputs.COMMIT_SHA }}
 
       - name: Create and push new tag
         if: false
