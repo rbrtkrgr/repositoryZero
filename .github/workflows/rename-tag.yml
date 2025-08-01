@@ -1,0 +1,27 @@
+name: Rename Git Tag
+
+on:
+  workflow_dispatch: # Allows manual triggering of the workflow
+    inputs:
+      old_tag_name:
+        required: true
+
+jobs:
+  rename_tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4 # Checkout your repository code
+
+      - name: Get commit SHA of old tag
+        id: get_sha
+        run: echo "COMMIT_SHA=$(git rev-parse ${{ inputs.old_tag_name }})" >> $GITHUB_OUTPUT
+
+      - name: Delete old tag
+        run: |
+          git tag -d ${{ inputs.old_tag_name }}
+          git push origin :${{ inputs.old_tag_name }}
+
+      - name: Create and push new tag
+        run: |
+          git tag ${{ inputs.new_tag_name }} ${{ steps.get_sha.outputs.COMMIT_SHA }}
+          git push origin ${{ inputs.new_tag_name }}
