@@ -8,6 +8,10 @@ on:
       new_tag_name:
         required: true
 
+
+permissions:
+  actions: write
+
 jobs:
   rename_tag:
     runs-on: ubuntu-latest
