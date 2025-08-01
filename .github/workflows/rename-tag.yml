@@ -5,6 +5,8 @@ on:
     inputs:
       old_tag_name:
         required: true
+      new_tag_name:
+        required: true
 
 jobs:
   rename_tag:
