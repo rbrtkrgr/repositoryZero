@@ -38,18 +38,21 @@ jobs:
         
         
     - name: Checkout
+      if: false
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: Tag Prerelease
-      if: ${{ env.PRERELEASE == 'true' }}
+      if: false
+      #if: ${{ env.PRERELEASE == 'true' }}
       run: |
         echo "Creating a Pre-Release Tag"
         #TAG="0.8.1-beta"
         #git tag $TAG
         #git push origin $TAG
     - name: Tag Release
-      if: ${{ env.RELEASE == 'true' }}
+      if: false
+      #if: ${{ env.RELEASE == 'true' }}
       run: |
         echo "Creating a Release Tag"
         #TAG="0.8-release"
