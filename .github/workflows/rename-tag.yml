@@ -12,6 +12,7 @@ on:
 permissions:
   actions: write
   contents: write
+  workflows: write
 
 jobs:
   rename_tag:
@@ -31,8 +32,6 @@ jobs:
           git push origin :${{ inputs.old_tag_name }}
 
       - name: Create and push new tag
-        permissions:
-          workflows: write
         run: |
           git tag ${{ inputs.new_tag_name }} ${{ steps.get_sha.outputs.COMMIT_SHA }}
           git push origin ${{ inputs.new_tag_name }}
