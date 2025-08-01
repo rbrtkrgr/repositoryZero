@@ -17,7 +17,12 @@ jobs:
       - name: Get commit SHA of old tag
         id: get_sha
         run: echo "COMMIT_SHA=$(git rev-parse ${{ inputs.old_tag_name }})" >> $GITHUB_OUTPUT
-
+        
+      - name: Delete old tag
+        run: |
+          git tag -d ${{ inputs.old_tag_name }}
+          git push origin :${{ inputs.old_tag_name }}
+          
       - name: Create QA Pre-release
         id: create-release
         uses: actions/create-release@v1
@@ -35,8 +40,5 @@ jobs:
           git tag ${{ inputs.new_tag_name }} ${{ steps.get_sha.outputs.COMMIT_SHA }}
           git push origin ${{ inputs.new_tag_name }}
 
-      - name: Delete old tag
-        run: |
-          git tag -d ${{ inputs.old_tag_name }}
-          git push origin :${{ inputs.old_tag_name }}
+
 
