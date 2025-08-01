@@ -1,11 +1,9 @@
-name: Rename Git Tag
+name: Promote Dev to QA
 
 on:
   workflow_dispatch: # Allows manual triggering of the workflow
     inputs:
       old_tag_name:
-        required: true
-      new_tag_name:
         required: true
 
 
@@ -24,8 +22,17 @@ jobs:
       - name: Get commit SHA of old tag
         id: get_sha
         run: echo "COMMIT_SHA=$(git rev-parse ${{ inputs.old_tag_name }})" >> $GITHUB_OUTPUT
-        
+
+      - name: Create QA Pre-release
+        id: create-release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{inputs.old_tag_name}}-beta
+          release_name:  ${{inputs.old_tag_name}}-beta
+          prerelease: true
+
       - name: Create and push new tag
+        if: false
         run: |
           git tag ${{ inputs.new_tag_name }} ${{ steps.get_sha.outputs.COMMIT_SHA }}
           git push origin ${{ inputs.new_tag_name }}
