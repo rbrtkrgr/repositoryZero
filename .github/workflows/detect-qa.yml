@@ -1,0 +1,17 @@
+name: Detecting QA Release
+
+on:
+  release:
+    types:
+      - published
+      - prerelease
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  echo-qa-prerelease:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Detected QA Pre-Release - $GITHUB_REF"
