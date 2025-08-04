@@ -1,0 +1,71 @@
+name: "Iterate Version"
+
+on:
+  workflow_dispatch:
+    inputs:
+      product:
+        type: string
+        required: true
+      branch:
+        type: string
+        required: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  Deploy:
+    runs-on: [ubuntu-latest]
+    outputs:
+      VERSION: ${{ steps.buildnumber.outputs.build }}
+    steps:
+      - name: Determine Next Iteration
+        env:
+          PRODUCT: ${{inputs.product}}
+          BRANCH: ${{inputs.branch}}
+        run: |
+          set -e
+
+          PRODUCT="${{env.PRODUCT}}"
+          BRANCH="${{env.BRANCH}}"
+
+          # Format date as YYYY_Mon_DD (e.g. 2025_Aug_04)
+          DATE=$(date "+%Y_%b_%d")
+
+          # Convert month abbreviation to Title Case (if needed)
+          DATE=$(echo "$DATE" | sed 's/\b\([a-z]\)/\u\1/g')
+          
+          # Full date tag prefix
+          PREFIX="${PRODUCT}_${BRANCH}_${DATE}_"
+          
+          # Get all tags that start with the prefix
+          TAGS=$(git tag -l "${PREFIX}[A-Z]")
+
+          # Extract the highest letter from matching tags
+          MAX_LETTER=""
+          for tag in $TAGS; do
+              # Extract the last character after the last underscore
+              LETTER="${tag##*_}"
+              if [[ -z "$MAX_LETTER" || "$LETTER" > "$MAX_LETTER" ]]; then
+                  MAX_LETTER="$LETTER"
+              fi
+          done
+
+          # Determine next iteration
+          if [[ -z "$MAX_LETTER" ]]; then
+              NEXT_LETTER="A"
+          else
+              # Increment the character
+              NEXT_LETTER=$(echo "$MAX_LETTER" | tr "A-Y" "B-Z")
+              if [[ "$MAX_LETTER" == "Z" ]]; then
+                  echo "🔥 Error: Already at iteration Z for today!"
+                  exit 1
+              fi
+          fi
+
+          # Final tag name
+          NEXT_TAG="${PREFIX}${NEXT_LETTER}"
+          
+          echo "Check next tag: $NEXT_TAG"
+      
