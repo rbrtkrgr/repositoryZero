@@ -20,6 +20,8 @@ jobs:
     outputs:
       VERSION: ${{ steps.buildnumber.outputs.build }}
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
       - name: Determine Next Iteration
         env:
           PRODUCT: ${{inputs.product}}
