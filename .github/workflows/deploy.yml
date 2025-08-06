@@ -1,0 +1,24 @@
+name: Deploy .NET Framework 4.8 to Azure Web App
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code (optional)
+        uses: actions/checkout@v4
+
+      - name: Setup deployment folder
+        run: |
+          mkdir package
+          xcopy /s /y /i path\to\your\build\artifacts\* package\
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: YOUR_WEBAPP_NAME
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: package
