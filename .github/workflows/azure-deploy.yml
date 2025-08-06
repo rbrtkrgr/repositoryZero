@@ -1,0 +1,71 @@
+name: Deploy TAAS
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Deployment environment"
+        required: false
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - test
+          - stage
+          - prod
+      release_tag:
+        description: "Release tag (leave blank for latest)"
+        required: false
+        default: ""
+
+  repository_dispatch:
+    types: [trigger-deploy]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      OWNER: ${{ github.repository_owner }}
+      REPO: ${{ github.event.repository.name }}
+      RELEASE_FILENAME: taas-1000.zip
+
+    steps:
+    - name: Get release tag (latest if blank)
+      id: get_release
+      run: |
+        INPUT_TAG="${{ github.event.inputs.release_tag || github.event.client_payload.release_tag || '' }}"
+        if [ -z "$INPUT_TAG" ]; then
+          echo "No tag provided, fetching latest..."
+          TAG=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            https://api.github.com/repos/$OWNER/$REPO/releases/latest | jq -r '.tag_name')
+        else
+          echo "Using provided tag: $INPUT_TAG"
+          TAG="$INPUT_TAG"
+        fi
+        echo "RELEASE_TAG=$TAG" >> "$GITHUB_ENV"
+        echo "::set-output name=tag::$TAG"
+
+    - name: Get release asset download URL
+      id: get_asset
+      run: |
+        ASSET_URL=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          https://api.github.com/repos/$OWNER/$REPO/releases/tags/${{ env.RELEASE_TAG }} \
+          | jq -r ".assets[] | select(.name==\"${RELEASE_FILENAME}\") | .browser_download_url")
+        if [ -z "$ASSET_URL" ]; then
+          echo "Release asset '${RELEASE_FILENAME}' not found in tag ${{ env.RELEASE_TAG }}"
+          exit 1
+        fi
+        echo "ASSET_URL=$ASSET_URL" >> "$GITHUB_ENV"
+
+    - name: Download release asset
+      run: |
+        curl -L -H "Authorization: token $GITHUB_TOKEN" "$ASSET_URL" --output taas-1000.zip
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ secrets.AZURE_WEBAPP_NAME_DEV }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}
+        package: taas-1000.zip
