@@ -1,0 +1,53 @@
+trigger: none  # manual trigger or customize to your needs
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  GITHUB_OWNER: your-org-or-username
+  GITHUB_REPO: your-repo
+  GITHUB_TOKEN: $(github_token)  # Define as pipeline variable or secret
+  RELEASE_FILENAME: app.zip      # Name of the asset attached to the release
+  DOWNLOAD_PATH: $(Pipeline.Workspace)/releases
+
+steps:
+
+- task: PowerShell@2
+  displayName: Get latest release asset URL
+  inputs:
+    targetType: 'inline'
+    script: |
+      $headers = @{ Authorization = "token $env:GITHUB_TOKEN" }
+      $uri = "https://api.github.com/repos/$env:GITHUB_OWNER/$env:GITHUB_REPO/releases/latest"
+      $response = Invoke-RestMethod -Uri $uri -Headers $headers
+      $asset = $response.assets | Where-Object { $_.name -eq "$env:RELEASE_FILENAME" }
+      if (-not $asset) {
+        Write-Error "Asset '$env:RELEASE_FILENAME' not found in latest release."
+        exit 1
+      }
+      $url = $asset.browser_download_url
+      Write-Host "##vso[task.setvariable variable=ASSET_DOWNLOAD_URL]$url"
+
+- task: PowerShell@2
+  displayName: Download asset from GitHub release
+  inputs:
+    targetType: 'inline'
+    script: |
+      $url = "$(ASSET_DOWNLOAD_URL)"
+      $output = "$(DOWNLOAD_PATH)/$(RELEASE_FILENAME)"
+      Invoke-WebRequest -Uri $url -OutFile $output -Headers @{ Authorization = "token $env:GITHUB_TOKEN" }
+      Write-Host "Downloaded to $output"
+
+- task: ExtractFiles@1
+  displayName: Extract release artifact
+  inputs:
+    archiveFilePatterns: '$(DOWNLOAD_PATH)/$(RELEASE_FILENAME)'
+    destinationFolder: '$(Pipeline.Workspace)/extracted'
+    cleanDestinationFolder: true
+
+- task: AzureWebApp@1
+  displayName: Deploy to Azure App Service
+  inputs:
+    azureSubscription: 'Your-Service-Connection-Name'
+    appName: 'your-app-name'
+    package: '$(Pipeline.Workspace)/extracted'
