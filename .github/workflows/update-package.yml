@@ -20,14 +20,14 @@ jobs:
             echo "Version 13.0.3 already installed"
             echo "match=false" >> $GITHUB_OUTPUT
           else
-            echo "Version 13.0.3 already installed"
+            echo "Version 13.0.3 needs to be installed"
             # dotnet add package Newtonsoft.Json --version 13.0.3
             echo "match=true" >> $GITHUB_OUTPUT
           fi
       - name: Create update branch
         if: steps.check.outputs.match == 'true'
         run: echo "Creating new branch for merge"
-      - name: Create update branch
+      - name: Skip update branch
         if: steps.check.outputs.match == 'false'
         run: echo "No update needed."
       - name: Check Git Status
