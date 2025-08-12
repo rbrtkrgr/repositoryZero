@@ -16,7 +16,7 @@ jobs:
       - name: Check Package Version
         id: check
         run: |
-          if dotnet list package | grep -q "${{env.PACKAGE_NAME}}.*${{env.PACKAGE_VERSION}}; then
+          if dotnet list package | grep -q "${{env.PACKAGE_NAME}}.*${{env.PACKAGE_VERSION}}"; then
             echo "Version 13.0.3 already installed"
             echo "match=false" >> $GITHUB_OUTPUT
           else
