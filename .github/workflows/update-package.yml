@@ -8,35 +8,35 @@ env:
   PACKAGE_VERSION: "13.0.3"
 
 jobs:
-  name: Detect and Update Packages
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-    - name: Check Package Version
-      id: check
-      run: |
-        if dotnet list package | grep -q "${{env.PACKAGE_NAME}}.*${{env.PACKAGE_VERSION}}; then
-          echo "Version 13.0.3 already installed"
-          echo "match=false" >> $GITHUB_OUTPUT
-        else
-          echo "Version 13.0.3 already installed"
-          # dotnet add package Newtonsoft.Json --version 13.0.3
-          echo "match=true" >> $GITHUB_OUTPUT
-        fi
-    - name: Create update branch
-      if: ${{steps.check.outputs.match}} == 'true'
-      run: echo "Creating new branch for merge"
-    - name: Create update branch
-      if: ${{steps.check.outputs.match}} == 'false'
-      run: echo "No update needed."
-    - name: Check Git Status
-      run: | 
-        if git status --porcelain | grep -q '\.csproj$'; then
-          echo "Changed"
-          echo "changed=true" >> $GITHUB_OUTPUT
-        else
-          echo "Unchanged"
-          echo "changed=false" >> $GITHUB_OUTPUT
-        fi
-        echo "Changed: $changed"
+  detect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Check Package Version
+        id: check
+        run: |
+          if dotnet list package | grep -q "${{env.PACKAGE_NAME}}.*${{env.PACKAGE_VERSION}}; then
+            echo "Version 13.0.3 already installed"
+            echo "match=false" >> $GITHUB_OUTPUT
+          else
+            echo "Version 13.0.3 already installed"
+            # dotnet add package Newtonsoft.Json --version 13.0.3
+            echo "match=true" >> $GITHUB_OUTPUT
+          fi
+      - name: Create update branch
+        if: ${{steps.check.outputs.match}} == 'true'
+        run: echo "Creating new branch for merge"
+      - name: Create update branch
+        if: ${{steps.check.outputs.match}} == 'false'
+        run: echo "No update needed."
+      - name: Check Git Status
+        run: | 
+          if git status --porcelain | grep -q '\.csproj$'; then
+            echo "Changed"
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "Unchanged"
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+          echo "Changed: $changed"
