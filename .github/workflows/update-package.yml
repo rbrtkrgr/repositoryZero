@@ -25,10 +25,10 @@ jobs:
             echo "match=true" >> $GITHUB_OUTPUT
           fi
       - name: Create update branch
-        if: ${{steps.check.outputs.match}} == 'true'
+        if: steps.check.outputs.match == 'true'
         run: echo "Creating new branch for merge"
       - name: Create update branch
-        if: ${{steps.check.outputs.match}} == 'false'
+        if: steps.check.outputs.match == 'false'
         run: echo "No update needed."
       - name: Check Git Status
         run: | 
@@ -39,4 +39,3 @@ jobs:
             echo "Unchanged"
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
-          echo "Changed: $changed"
