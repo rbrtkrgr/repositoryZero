@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Restore
+        run: dotnet restore
       - name: Check Package Version
         id: check
         run: |
