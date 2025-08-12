@@ -31,11 +31,18 @@ jobs:
         if: steps.check.outputs.match == 'false'
         run: echo "No update needed."
       - name: Check Git Status
+        id: gitstatus
         run: | 
           if git status --porcelain | grep -q '\.csproj$'; then
             echo "Changed"
-            echo "changed=true" >> $GITHUB_OUTPUT
+            changed=true
           else
             echo "Unchanged"
-            echo "changed=false" >> $GITHUB_OUTPUT
+            changed=false
           fi
+          echo "Changed: $changed"
+          echo "changed=$changed" >> $GITHUB_OUTPUT
+      - name: Make new branch
+        if: steps.gitstatus.outputs.changed == 'true'
+        run: echo "Making new branch based on Git Status"
+      
