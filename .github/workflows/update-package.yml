@@ -2,10 +2,14 @@ name: Package Update
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        required: true
 
 env:
   PACKAGE_NAME: "Newtonsoft.Json"
-  PACKAGE_VERSION: "13.0.3"
+  PACKAGE_VERSION: ${{inputs.version}} #"13.0.3"
 
 jobs:
   detect:
