@@ -1,0 +1,22 @@
+name: build-and-publish
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  detect-changes:
+    uses: ./.github/workflows/detect-changed-packages.yml
+
+  build-and-pack:
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    if: ${{ needs.detect-changes.outputs.changed_projects != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build & Pack Changed Projects
+        run: |
+          for dir in ${{ needs.detect-changes.outputs.changed_projects }}; do
+            echo "Packing $dir"
+            dotnet pack "$dir" --configuration Release
+          done
