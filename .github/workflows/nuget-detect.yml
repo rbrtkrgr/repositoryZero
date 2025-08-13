@@ -1,0 +1,50 @@
+name: detect-changed-packages
+
+on:
+  workflow_call: # Allows other workflows to call this
+    outputs:
+      changed_projects:
+        description: "List of changed .csproj projects"
+        value: ${{ jobs.detect.outputs.changed_projects }}
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      changed_projects: ${{ steps.set_outputs.outputs.changed_projects }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Needed so git diff works properly
+
+      - name: Find changed projects
+        id: find_changes
+        run: |
+          # Determine the commit range
+          if [ -n "${{ github.event.before }}" ] && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+            BASE_SHA="${{ github.event.before }}"
+          else
+            BASE_SHA="$(git rev-parse HEAD^)"
+          fi
+
+          echo "Comparing $BASE_SHA to $GITHUB_SHA..."
+
+          # Find changed .csproj files under src/lib
+          CHANGED_CSPROJ=$(git diff --name-only "$BASE_SHA" "$GITHUB_SHA" -- 'src/lib/**/*.csproj' || true)
+
+          if [ -n "$CHANGED_CSPROJ" ]; then
+            echo "Changed projects:"
+            echo "$CHANGED_CSPROJ"
+          else
+            echo "No project changes detected."
+          fi
+
+          # Extract just the project directories
+          CHANGED_DIRS=$(echo "$CHANGED_CSPROJ" | xargs -n 1 dirname | sort -u)
+
+          # Output as space-separated list
+          echo "changed_projects=$CHANGED_DIRS" >> $GITHUB_OUTPUT
+
+      - name: Set outputs
+        id: set_outputs
+        run: echo "changed_projects=${{ steps.find_changes.outputs.changed_projects }}" >> $GITHUB_OUTPUT
