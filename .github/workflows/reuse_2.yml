@@ -13,7 +13,7 @@ defaults:
 
 jobs:
   reuse_worflow_1:
-    uses: https://github.com/rbrtkrgr/repositoryZero/.github/workflows/reuse_1.yml@main
+    uses: rbrtkrgr/repositoryZero/.github/workflows/reuse_1.yml@main
     with:
       environment: ${{ inputs.environment }}
     secrets: inherit
