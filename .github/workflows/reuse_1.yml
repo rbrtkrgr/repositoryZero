@@ -1,0 +1,24 @@
+name: Reusable Workflow 1
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  something:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+    steps:
+      - name: Print variables
+        run: |
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Variable 1: ${{ vars.VAR_1 }}"
+          echo "Secret 1: ${{ secrets.SECRET_1 }}"
