@@ -1,0 +1,19 @@
+name: Reusable Workflow 2
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  reuse_worflow_1:
+    uses: https://github.com/rbrtkrgr/.github/workflows/reuse_1.yml@main
+    with:
+      environment: ${{ inputs.environment }}
+    secrets: inherit
